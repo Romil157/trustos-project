@@ -30,17 +30,6 @@ Instead of silently blocking the page, the extension deploys an immediate visual
 - **User Autonomy:** Allows users to easily toggle active protection on or off via a sleek, dark-themed popup interface.
 - **Accessible Design:** The intervention UI and popup dashboard utilize high-contrast visual indicators and semantic HTML for screen-reader compatibility.
 
----
-
-## Demo & Screenshots
-
-> **[Demo Video Link Placeholder: Insert YouTube or Loom Link]**
-
-| Extension Popup Dashboard | Warning Intervention Overlay |
-| :---: | :---: |
-| <img src="placeholder_popup.png" alt="Popup Interface showing Real-Time Risk Meter" width="300"/> | <img src="placeholder_overlay.png" alt="Full-Screen Glassmorphism Threat Overlay" width="500"/> |
-
----
 
 ## Installation Instructions
 
