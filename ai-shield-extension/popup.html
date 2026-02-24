@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Shield</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #334155;
+        }
+
+        body {
+            width: 340px;
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .shield-icon {
+            color: var(--accent);
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--accent);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Main Status area */
+        .status-card {
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            margin-bottom: 15px;
+        }
+
+        .status-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .status-circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .status-circle.risk-high {
+            background-color: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+        }
+
+        .status-circle.risk-med {
+            background-color: var(--warning);
+            box-shadow: 0 0 10px var(--warning);
+        }
+
+        .status-circle.disabled {
+            background-color: var(--text-muted);
+            box-shadow: none;
+        }
+
+        /* Breakdown Area */
+        .breakdown {
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            display: none;
+            /* hidden by default if safe */
+        }
+
+        .breakdown.visible {
+            display: block;
+        }
+
+        .breakdown h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .reasons-list {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .reasons-list li {
+            margin-bottom: 6px;
+        }
+
+        /* Meter */
+        .meter-container {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--success);
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="brand">
+            <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            AI Shield
+        </div>
+        <label class="switch" title="Toggle Protection">
+            <input type="checkbox" id="toggle-switch" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div class="status-card">
+        <div class="status-title" id="status-title">Current Tab Status</div>
+        <div class="status-indicator">
+            <div class="status-circle" id="status-circle"></div>
+            <span id="status-text">Scanning...</span>
+        </div>
+
+        <div class="meter-container">
+            <div class="meter-fill" id="risk-meter"></div>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;" id="score-text">
+            Risk Score: --%
+        </div>
+    </div>
+
+    <div class="breakdown" id="breakdown-box">
+        <h3>Risk Factors Detected</h3>
+        <ul class="reasons-list" id="reasons-list">
+            <!-- Populated by JS -->
+        </ul>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

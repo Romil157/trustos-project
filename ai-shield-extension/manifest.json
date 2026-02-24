@@ -1,0 +1,51 @@
+{
+    "manifest_version": 3,
+    "name": "TRUSTOS AI Shield",
+    "version": "1.0",
+    "description": "Real-time AI Phishing Detection & Ed-Tech Security Layer",
+    "permissions": [
+        "activeTab",
+        "storage",
+        "declarativeNetRequest"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "scripts/config.js",
+                "scripts/bloom_filter.js",
+                "scripts/threat_data.js",
+                "scripts/domain_check.js",
+                "scripts/wasm_loader.js",
+                "scripts/keyword_check.js",
+                "scripts/form_check.js",
+                "scripts/risk_engine.js",
+                "content_detector.js"
+            ],
+            "css": [
+                "overlay.css"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "wasm/ml_engine.wasm"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}
