@@ -1,27 +1,29 @@
-# Contributing to AI Shield
+# Contributing to TrustOS
 
-First off, thank you for considering contributing to AI Shield! It's people like you that make AI Shield a great, privacy-first security tool.
+Thank you for contributing to TrustOS. Your contributions help build an open, accessible, privacy-first security layer for digital education and enterprise environments.
 
 ## How Can I Contribute?
 
 ### Reporting Bugs
-Bugs are tracked as GitHub issues. When creating an issue, please explain the problem and include additional details to help maintainers reproduce the problem:
-* Use a clear and descriptive title.
-* Provide specific steps to reproduce the issue.
-* Describe the exact behavior you observed and what you expected to see.
-* Include screenshots if the bug is visual (e.g., the popup or overlay).
+Bugs are tracked as GitHub issues. When filing an issue, please provide:
+* A concise and descriptive title.
+* Clear steps to reproduce the issue.
+* Expected behavior vs. actual behavior observed.
+* Browser version (Chrome, Edge, Brave) and operating system.
+* Relevant console logs or threat diagnostic export JSON.
 
-### Suggesting Enhancements
-Enhancement suggestions are also tracked as GitHub issues.
-* Provide a clear and descriptive title.
-* Provide a step-by-step description of the suggested enhancement.
-* Explain why this enhancement would be useful to most users.
+### Suggesting Heuristic & Architectural Enhancements
+Enhancement suggestions are welcome:
+* Describe the phishing attack vector or threat pattern being targeted.
+* Explain the heuristic algorithm or edge detection methodology.
+* Ensure proposals adhere strictly to our Zero-Transmission privacy guarantee (no cloud API dependencies).
 
-### Pull Requests
-1. Fork the repo and create your branch from `main`.
-2. Ensure your code follows the existing style conventions (Vanilla JS, modular structure).
-3. Update the `README.md` with details of changes if applicable.
-4. Execute manual tests in Chrome to verify no breakages in the heuristic engine.
-5. Issue that pull request!
+### Pull Request Workflow
+1. Fork the repository and create your branch from `main`.
+2. Follow Vanilla JavaScript conventions and modular design principles.
+3. Add or update unit tests in `tests/unit_tests.js`.
+4. Run the automated test suite (`node tests/node_test_runner.js` or open `tests/test_runner.html`) to ensure all tests pass.
+5. Verify that no emojis are present in code, commit messages, or documentation.
+6. Submit your pull request with a descriptive summary of changes.
 
-By contributing, you agree that your contributions will be licensed under its MIT License.
+By contributing to TrustOS, you agree that your contributions will be licensed under the project's MIT License.

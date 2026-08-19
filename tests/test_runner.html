@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustOS Automated Test Runner</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --surface: #131b2e;
+            --surface-card: #1e293b;
+            --border: rgba(148, 163, 184, 0.15);
+            --accent: #3b82f6;
+            --danger: #ef4444;
+            --success: #10b981;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 30px 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
+
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .test-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .test-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pass {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+
+        .badge-fail {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+    </style>
+
+    <!-- Load TrustOS Scripts -->
+    <script src="../trustos-extension/scripts/config.js"></script>
+    <script src="../trustos-extension/scripts/bloom_filter.js"></script>
+    <script src="../trustos-extension/scripts/threat_data.js"></script>
+    <script src="../trustos-extension/scripts/domain_check.js"></script>
+    <script src="../trustos-extension/scripts/wasm_loader.js"></script>
+    <script src="../trustos-extension/scripts/keyword_check.js"></script>
+    <script src="../trustos-extension/scripts/form_check.js"></script>
+    <script src="../trustos-extension/scripts/risk_engine.js"></script>
+    <script src="unit_tests.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>TrustOS Automated Verification Suite</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Validates Bloom filter O(1) bounds, Shannon entropy metrics, Levenshtein typosquatting, IDN homographs, and multi-vector RiskEngine.</p>
+        </header>
+
+        <div class="summary-card">
+            <div>
+                <div class="stat-value" id="stat-total">--</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div>
+                <div class="stat-value" style="color: var(--success);" id="stat-passed">--</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div>
+                <div class="stat-value" style="color: var(--danger);" id="stat-failed">--</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <ul class="test-list" id="test-list">
+            <li class="test-item" style="color: var(--text-muted);">Executing tests...</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const summary = await window.TrustOSTests.runAll();
+            
+            document.getElementById('stat-total').textContent = summary.total;
+            document.getElementById('stat-passed').textContent = summary.passed;
+            document.getElementById('stat-failed').textContent = summary.failed;
+
+            const list = document.getElementById('test-list');
+            list.innerHTML = '';
+
+            summary.results.forEach(test => {
+                const li = document.createElement('li');
+                li.className = 'test-item';
+                li.innerHTML = `
+                    <div>
+                        <strong>${test.name}</strong>
+                        ${test.details ? `<div style="color: var(--text-muted); font-size: 0.78rem; margin-top: 2px;">${test.details}</div>` : ''}
+                    </div>
+                    <span class="badge ${test.passed ? 'badge-pass' : 'badge-fail'}">
+                        ${test.passed ? 'PASSED' : 'FAILED'}
+                    </span>
+                `;
+                list.appendChild(li);
+            });
+        });
+    </script>
+</body>
+
+</html>
